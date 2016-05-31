@@ -50,6 +50,8 @@ public:
 class Thread
 {
 public:
+    typedef void (*Callback)(void *);
+
     Thread();
     Thread(Runnable &r);
     ~Thread();
@@ -57,12 +59,48 @@ public:
     static void sleep(long ms);
     void start();
     void start(Runnable &r);
+    void start(Callback cb, void* argv = 0);
+
+    template<class Functor>
+    void startFunc(Functor fn)
+    {
+        FunctorRunnable<Functor> *f = new FunctorRunnable<Functor>(fn);
+        start(*f);
+    }
+
     void join();
     
+protected:
+
+    template<class Functor>
+    class FunctorRunnable : public Runnable
+    {
+    public:
+        FunctorRunnable(const Functor &functor) :
+            functor_(functor)
+        {
+        }
+
+        ~FunctorRunnable()
+        {
+        }
+
+        void run()
+        {
+            functor_();
+        }
+
+    private:
+        Functor     functor_;
+    };
+
+    static void* thread_starter(void *t);
 
 private:
-    pthread_t   tid;
+    pthread_t   tid_;
     Runnable    *runnable_;
+
+    static void nsleep(int secs, long nanos);
 };
 
 class ThreadPool
