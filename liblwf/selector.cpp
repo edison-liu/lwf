@@ -1,4 +1,6 @@
 
+#include <string.h>
+
 #include <logging.h>
 #include <selector.h>
 #include <eventloop.h>

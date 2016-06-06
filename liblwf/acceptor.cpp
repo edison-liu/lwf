@@ -88,8 +88,6 @@ void Acceptor::set_handler(int fd)
 
 void Acceptor::onConnection()
 {
-    printf("connect_callback: fd = %d type = %d\r\n", fd_);
-    
     int cli_sock;
     struct sockaddr_in cli_addr;
     socklen_t          addr_len = sizeof(cli_addr);
