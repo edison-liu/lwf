@@ -1,6 +1,8 @@
 #ifndef _LWF_THREADS_H_
 #define _LWF_THREADS_H_
 
+#include <vector>
+
 #include <pthread.h>
 
 namespace LWF
@@ -15,7 +17,11 @@ public:
     bool lock();
     bool unlock();
 
+    bool wait();
+    bool notify();
+
 private:
+    pthread_cond_t      cond_;
     pthread_mutex_t     mutex_;
 
 };
@@ -30,11 +36,14 @@ private:
     Synchronized    &sync_;
 };
 
-class ScopeLock
+class ScopedLock
 {
 public:
+    ScopedLock(Synchronized &s) : sync_(s) { sync_.lock(); }
+    ~ScopedLock() { sync_.unlock(); }
 
 private:
+    Synchronized    &sync_;
 };
 
 class Runnable
@@ -44,6 +53,31 @@ public:
     ~Runnable() {}
 
     virtual void run() = 0;
+
+};
+
+template<class C>
+class FunctionCallback : public Runnable
+{
+public:
+    typedef void (C::*Callback)();
+
+    FunctionCallback(C &obj, Callback cb) : object_(&obj), method_(cb)
+    {
+    }
+
+    ~FunctionCallback()
+    {
+    }
+
+    void run()
+    {
+        (object_->*method_)();
+    }
+
+private:
+    C           *object_;
+    Callback    method_;
 
 };
 
@@ -103,11 +137,27 @@ private:
     static void nsleep(int secs, long nanos);
 };
 
+class PooledThread;
+
 class ThreadPool
 {
 public:
+    ThreadPool(int capacity);
+    ~ThreadPool();
+
+    void start(Runnable &r);
+
+    void join_all();
+
+protected:
+    PooledThread* get_thread();
+    PooledThread* create_thread();
 
 private:
+    typedef std::vector<PooledThread *> ThreadVec;
+
+    ThreadVec   thread_vec_;
+    Synchronized    sync_;
 };
 
 class Task
