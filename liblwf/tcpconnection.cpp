@@ -1,6 +1,7 @@
 
 #include <iostream>
 
+#include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -76,8 +77,6 @@ void TcpConnection::onMessage()
     int rv;
     char buf[1024];
     
-    printf("onMessage: fd = %d \r\n", fd_);
-
     memset(buf, 0, sizeof(buf));
     rv = receive(buf, sizeof(buf));
     if (rv < 0)
