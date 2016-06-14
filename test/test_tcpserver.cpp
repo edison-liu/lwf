@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -65,8 +66,6 @@ void TcpServer::run()
 
 TcpConnection* TcpServer::on_new_connection(int fd, SockAddr &addr)
 {
-    printf("MyAcceptor::new_connection: fd = %d type = %d\r\n", fd);
-    
     TcpConnection *c = new TcpConnection(event_loop_, fd);
     return c;
 }

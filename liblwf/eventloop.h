@@ -26,6 +26,8 @@ public:
     int register_handler(EventHandler *eh, IoEventType type);
     int register_handler(int fd, EventHandler *eh, IoEventType type);
 
+    int unregister_handler(int fd, EventHandler *eh, IoEventType type);
+
 private:
     TimerList       timer_list_;
     SelectorList    selector_list_;

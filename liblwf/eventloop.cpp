@@ -44,5 +44,9 @@ int EventLoop::register_handler(int fd, EventHandler *eh, IoEventType type)
     selector_list_.register_handler(fd, eh, type);
 }
 
+int EventLoop::unregister_handler(int fd, EventHandler *eh, IoEventType type)
+{
+    selector_list_.unregister_handler(fd, eh, type);
+}
 
 }

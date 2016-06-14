@@ -46,11 +46,30 @@ int SelectorList::register_handler(EventHandler *eh, IoEventType type)
 
 int SelectorList::register_handler(int fd, EventHandler *eh, IoEventType type)
 {
-    handler_repos_.insert(std::make_pair(fd, eh));
+    handler_repos_[type].insert(std::make_pair(fd, eh));
 
     if (fd > max_fd_)
         max_fd_ = fd;
     FD_SET(fd, &fds_[type]);
+
+    LOG_INFO << "Register handler for fd " << fd << " Type: " << type << "\r\n";
+}
+
+int SelectorList::unregister_handler(int fd, EventHandler *eh, IoEventType type)
+{
+    std::map<int, EventHandler*>::iterator it;
+
+    it = handler_repos_[type].find(fd);
+    if (it != handler_repos_[type].end()) 
+    {
+        handler_repos_[type].erase(it);
+    }
+
+    if (fd > max_fd_)
+        max_fd_ = fd;
+    FD_CLR(fd, &fds_[type]);
+
+    LOG_INFO << "UnRegister handler for fd " << fd << " Type: " << type << "\r\n";
 }
 
 void SelectorList::dispatch()
@@ -62,33 +81,38 @@ void SelectorList::dispatch()
         LOG_ERROR << "select error" << "\r\n";
         return;
     }
+    LOG_TRACE << "select returns with " << testfds_n_ << " is set."<< "\r\n";
 
     // Dispatch the event.
     std::map<int, EventHandler *>::iterator it;
     int n = 0;
-    for (it = handler_repos_.begin(); (n <= testfds_n_) && (it != handler_repos_.end()); ++it) 
+
+    for (int i = 0; (n < testfds_n_) and (i < SEL_IDX_MAX); i++) 
     {
-        if (FD_ISSET(it->first, &test_fds_[SEL_IDX_RD])) 
+        for (it = handler_repos_[i].begin(); (n < testfds_n_) && (it != handler_repos_[i].end()); ++it) 
         {
-            it->second->handle_input(it->first);
-            ++n;
-            continue;
+            if (FD_ISSET(it->first, &test_fds_[i])) 
+            {
+                LOG_TRACE << "FD " << it->first << " is set for SEL_IDX " << i << "\r\n";
+                switch (i) 
+                {
+                    case SEL_IDX_RD:
+                        it->second->handle_input(it->first);
+                        break;
+                    case SEL_IDX_WR:
+                        it->second->handle_output(it->first);
+                        break;
+                    case SEL_IDX_EX:
+                        it->second->handle_exception(it->first);
+                        break;
+                    default:
+                        LOG_WARN << "Wrong fd " << it->first << "\r\n";
+                        break;
+                }
+                ++n;
+                continue;
+            }
         }
-
-        if (FD_ISSET(it->first, &test_fds_[SEL_IDX_WR])) 
-        {
-            it->second->handle_output(it->first);
-            ++n;
-            continue;
-        }
-
-        if (FD_ISSET(it->first, &test_fds_[SEL_IDX_EX])) 
-        {
-            it->second->handle_exception(it->first);
-            ++n;
-            continue;
-        }
-        
     }
 
 #if 0

@@ -37,6 +37,7 @@ public:
 
     int register_handler(EventHandler *eh, IoEventType type);
     int register_handler(int fd, EventHandler *eh, IoEventType type);
+    int unregister_handler(int fd, EventHandler *eh, IoEventType type);
     
     void dispatch();
 
@@ -64,7 +65,11 @@ private:
         
     std::vector<SelectorNode>   selector_node_;
 
-    std::map<int, EventHandler *>   handler_repos_;
+    std::map<int, EventHandler*>    handler_repos_[SEL_IDX_MAX];
+
+    //std::map<int, EventHandler*>    rd_handlers;
+    //std::map<int, EventHandler*>    wr_handlers;
+    //std::map<int, EventHandler*>    ex_handlers;
     
     fd_set  fds_[SEL_IDX_MAX];
     fd_set  test_fds_[SEL_IDX_MAX];

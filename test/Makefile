@@ -12,7 +12,7 @@ EXEC		= test_threads test_tcpserver test_acceptor test_logging test_eventloop te
 
 .PHONY: all clean $(test_appl)
 
-test_appl: test_threads # test_tcpserver #test_acceptor #test_eventhandler #test_eventloop #test_logging
+test_appl: test_connector test_tcpserver # test_threads test_acceptor #test_eventhandler #test_eventloop #test_logging
 
 all: $(test_appl)
     
@@ -29,6 +29,9 @@ test_acceptor: test_acceptor.o $(LIBS)
 	$(CC) $(LDFLAGS) $^ -o $@
 
 test_tcpserver: test_tcpserver.o $(LIBS)
+	$(CC) $(LDFLAGS) $^ -o $@
+
+test_connector: test_connector.o $(LIBS)
 	$(CC) $(LDFLAGS) $^ -o $@
 
 test_threads: test_threads.o $(LIBS)

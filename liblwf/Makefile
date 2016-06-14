@@ -8,7 +8,7 @@ LD 			= g++
 AR 			= ar
 
 LIBS_OBJS	= logging.o eventloop.o timer.o selector.o eventhandler.o sockaddr.o \
-			acceptor.o tcpconnection.o threads.o
+			acceptor.o tcpconnection.o threads.o connector.o
 LIBS		= liblwf.a
 
 .PHONY: all clean
