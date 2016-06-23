@@ -1,11 +1,16 @@
 
 #include <logging.h>
+#include <event.h>
 #include <eventhandler.h>
 
 using namespace LWF;
 
 namespace LWF
 {
+
+EventHandler::EventHandler()
+{
+}
 
 EventHandler::EventHandler(EventLoop *e)
     : eventloop_(e)
@@ -38,6 +43,18 @@ int EventHandler::handle_timeout()
 {
     LOG_TRACE << "EventHandler::handle_timeout()" << "\r\n";
     return -1;
+}
+
+int EventHandler::handle_event(Event *e)
+{
+    LOG_TRACE << "EventHandler::handle_event()" << "\r\n";
+    LOG_TRACE << "    e->name() = " << e->name() << "\r\n";
+    return -1;
+}
+
+bool EventHandler::equals(const EventHandler *e) const
+{
+    return (this == e);
 }
 
 int EventHandler::get_handler()

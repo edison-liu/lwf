@@ -12,7 +12,9 @@
 #include <eventloop.h>
 #include <connector.h>
 
+#include <openflow_packet.h>
 #include <of_connection.h>
+
 
 namespace LWF
 {
@@ -22,11 +24,12 @@ namespace OPENFLOW
 OFConnection::OFConnection(EventLoop *e, int fd) :
     eventloop_(e), fd_(fd)
 {
+    LOG_TRACE << "OFConnection::OFConnection()" << "\r\n";
     conn_ = new ServiceHandler<OFConnection>(e);
     conn_->set_input_callback(*this, &OFConnection::handle_input);
-    conn_->set_output_callback(*this, &OFConnection::handle_output);
+    //conn_->set_output_callback(*this, &OFConnection::handle_output);
     eventloop_->register_handler(fd, conn_, IOT_READ);
-    eventloop_->register_handler(fd, conn_, IOT_WRITE);
+    //eventloop_->register_handler(fd, conn_, IOT_WRITE);
 }
 
 OFConnection::~OFConnection()
@@ -40,6 +43,15 @@ int OFConnection::handle_input(int fd)
     LOG_TRACE << "OFConnection::handle_input " << "\r\n";
 
     receive(buf, 1024);
+
+    struct ofp_header   *msg;
+    msg = (struct ofp_header*)buf;
+
+    LOG_TRACE << "Receive# " << "\r\n";
+    LOG_TRACE << "\tversion = " << msg->version << "\r\n";
+    LOG_TRACE << "\ttype = " << msg->type << "\r\n";
+    LOG_TRACE << "\tlength = " << msg->length << "\r\n";
+    LOG_TRACE << "\txid = " << msg->xid << "\r\n";
 }
 
 int OFConnection::handle_output(int fd)

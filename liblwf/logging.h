@@ -27,6 +27,7 @@ public:
     ~LogStream();
     
     LogStream& operator<<(const char *msg);
+    LogStream& operator<<(const std::string msg);
     LogStream& operator<<(int i);
 
     const char* str();

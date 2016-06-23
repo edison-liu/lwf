@@ -33,6 +33,12 @@ LogStream& LogStream::operator<<(const char *msg)
     num_of_char_ += sprintf(&text_[num_of_char_], "%s", msg);
 }
 
+LogStream& LogStream::operator<<(const std::string msg)
+{
+    //num_of_char_ += strncpy(static_cast<char *>(&text_[0] + num_of_char_), msg, sizeof(text_));
+    num_of_char_ += sprintf(&text_[num_of_char_], "%s", msg.c_str());
+}
+
 LogStream& LogStream::operator<<(int i)
 {
     num_of_char_ += sprintf(&text_[num_of_char_], "%d", i);

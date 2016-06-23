@@ -9,7 +9,7 @@ LD 			= g++
 AR 			= ar
 
 LIBS		= 
-OBJS		= openflow.o of_connection.o
+OBJS		= openflow.o of_connection.o openflow_packet.o
 EXEC		= 
 
 .PHONY: all clean $(libopenflow)

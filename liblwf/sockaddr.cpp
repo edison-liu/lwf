@@ -57,7 +57,7 @@ SockAddr::~SockAddr()
 SockAddr& SockAddr::operator=(const SockAddr &a)
 {
     bzero(&addr_, sizeof(addr_));
-    memcpy(&addr_, &a, sizeof(addr_));
+    memcpy(&addr_, &a.addr_, sizeof(addr_));
     return *this;
 }
 

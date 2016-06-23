@@ -7,17 +7,23 @@ namespace LWF
 {
 
 class EventLoop;
+class Event;
 
 class EventHandler
 {
 public:
     EventHandler(EventLoop *e);
+    EventHandler();
     virtual ~EventHandler();
 
     virtual int handle_input(int fd);
     virtual int handle_output(int fd);
     virtual int handle_exception(int fd);
     virtual int handle_timeout();
+
+    virtual int handle_event(Event *e);
+
+    bool equals(const EventHandler *e) const;
 
     virtual int get_handler();
     virtual void set_handler(int fd);

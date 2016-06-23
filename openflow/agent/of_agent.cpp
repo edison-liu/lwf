@@ -21,6 +21,7 @@ OfAgent::OfAgent() :
     controller_addr_(0)
 {
     //event_loop_ = new LWF::EventLoop;
+    connector_ = new LWF::Connector<OFConnection>(&event_loop_);
 }
 
 OfAgent::OfAgent(LWF::SockAddr &addr) :
